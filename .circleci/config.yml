@@ -12,12 +12,8 @@ workflows:
             - yarn
   tests:
     jobs:
-      - test:
-          requires:
-            - yarn
-      - e2e:
-          requires:
-            - yarn
+      - test
+      - e2e
 
 jobs:
   hello:
