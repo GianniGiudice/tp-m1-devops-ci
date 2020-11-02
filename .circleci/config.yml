@@ -1,6 +1,60 @@
 version: 2.1
+
+workflows:
+  starter:
+    jobs:
+      - hello
+  install:
+    jobs:
+      - yarn
+      - lint:
+          requires:
+            - yarn
+  tests:
+    jobs:
+      - test:
+          requires:
+            - yarn
+      - e2e:
+          requires:
+            - yarn
+
 jobs:
-  build:
+  hello:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - run: echo "hello world"
+  yarn:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - restore_cache:
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      - run: yarn global add node-gyp && yarn install
+      - save_cache:
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ./node_modules
+  lint:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - restore_cache:
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      - run: yarn lint && yarn format:check
+  test:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - restore_cache:
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      - run: yarn test:ci
+  e2e:
     docker:
       - image: circleci/node:12 # the primary container, where your job's commands are run
         environment:
@@ -15,15 +69,7 @@ jobs:
           POSTGRES_PASSWORD: psqlpassword
           POSTGRES_DB: psdb
     steps:
-      - checkout # check out the code in the project directory
+      - checkout
       - restore_cache:
           key: yarn-packages-{{ checksum "yarn.lock" }}
-      - run: yarn global add node-gyp && yarn install
-      - run: yarn lint
-      - run: yarn format:check
-      - run: yarn test:ci
       - run: yarn test:e2e
-      - save_cache:
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - ./node_modules
