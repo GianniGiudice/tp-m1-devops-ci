@@ -22,7 +22,7 @@ jobs:
       - run: yarn lint
       - run: yarn format:check
       - run: yarn test:ci
-      - run: yarn test e2e
+      - run: yarn test:e2e
       - save_cache:
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
