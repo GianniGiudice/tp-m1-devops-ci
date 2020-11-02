@@ -8,9 +8,11 @@ jobs:
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
     steps:
       - checkout # check out the code in the project directory
-      - run: yarn global add node-gyp && yarn install
       - restore_cache:
           key: yarn-packages-{{ checksum "yarn.lock" }}
+      - run: yarn global add node-gyp && yarn install
+      - run: yarn lint && yarn format:check
+      - run: yarn test:ci
       - save_cache:
           key: yarn-packages-{{ checksum "yarn.lcok" }}
           paths:
