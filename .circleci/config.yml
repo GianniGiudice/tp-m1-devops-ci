@@ -16,4 +16,4 @@ jobs:
       - save_cache:
           key: yarn-packages-{{ checksum "yarn.lcok" }}
           paths:
-            - ~/.cache/yarn
+            - ./node_modules
