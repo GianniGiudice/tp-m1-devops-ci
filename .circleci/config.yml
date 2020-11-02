@@ -15,6 +15,6 @@ jobs:
       - run: yarn format:check
       - run: yarn test:ci
       - save_cache:
-          key: yarn-packages-{{ checksum "yarn.lcok" }}
+          key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
             - ./node_modules
