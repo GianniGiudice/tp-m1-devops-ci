@@ -13,5 +13,5 @@ jobs:
         key: yarn-packages-{{ checksum "yarn.lock" }}
       - save_cache:
         key: yarn-packages-{{ checksum "yarn.lcok" }}
-      - paths:
-        - ~/.cache/yarn
+        paths:
+          - ~/.cache/yarn
