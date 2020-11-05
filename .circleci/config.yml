@@ -82,7 +82,7 @@ jobs:
     docker:
       - image: circleci/buildpack-deps:stretch
         environment:
-          IMAGE_NAME: giannidocker
+          IMAGE_NAME: gianni-building-on-ci
     steps:
       - checkout
       - setup_remote_docker
