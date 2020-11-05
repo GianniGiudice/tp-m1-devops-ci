@@ -98,6 +98,4 @@ jobs:
           DOCKERHUB_PASS: testtpdocker
     steps:
       - setup_remote_docker
-      - run: |
-        echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push $IMAGE_NAME:latest
+      - run: | echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin ; docker push $IMAGE_NAME:latest
