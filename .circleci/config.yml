@@ -12,7 +12,7 @@ workflows:
           requires:
             - yarninstall
       - e2e
-      - dockerbuild:
+      - dockerpush:
           requires:
             - lint
             - unittest
@@ -20,12 +20,7 @@ workflows:
           filters:
             branches:
               only: main
-      - dockerpush:
-          requires:
-            - dockerbuild
-          filters:
-            branches:
-              only: main
+
 jobs:
   hello:
     docker:
@@ -80,7 +75,7 @@ jobs:
       - restore_cache:
           key: yarn-packages-{{ checksum "yarn.lock" }}
       - run: yarn test:e2e
-  dockerbuild:
+  dockerpush:
     docker:
       - image: circleci/buildpack-deps:stretch
         environment:
@@ -90,17 +85,6 @@ jobs:
       - setup_remote_docker
       - run: docker build --tag app:latest .
       - run: docker save -o image.tar app
-  dockerpush:
-    environment:
-      IMAGE_NAME: giannigiux/my-awesome-ci-expr
-    docker:
-      - image: circleci/node:12
-      - image: circleci/buildpack-deps:stretch
-        environment:
-          DOCKERHUB_USERNAME: giannigiux
-          DOCKERHUB_PASS: testtpdocker
-    steps:
-      - setup_remote_docker
       - run: docker login -u "giannigiux" -p "testtpdocker"
       - run: docker tag app:latest $IMAGE_NAME:$CIRCLE_BUILD_NUM
       - run: docker push $IMAGE_NAME:$CIRCLE_BUILD_NUM
