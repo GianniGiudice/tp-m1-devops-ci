@@ -63,7 +63,7 @@ jobs:
       - run: yarn test:ci
   e2e:
     docker:
-      - image: circleci/node:12 # the primary container, where your job's commands are run
+      - image: circleci/node:12
         environment:
           DATABASE_URL: postgres://psqluser:psqlpassword@localhost:5432/psdb
           JWT_SECRET: hello
@@ -94,6 +94,8 @@ jobs:
       - run: docker tag app:latest $IMAGE_NAME:$CIRCLE_BUILD_NUM
       - run: docker push $IMAGE_NAME:$CIRCLE_BUILD_NUM
   docbuild:
+    docker:
+      - image: circleci/node:12
     steps:
       - checkout
       - restore_cache:
