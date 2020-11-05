@@ -1,19 +1,28 @@
 version: 2.1
 
 workflows:
-  starter:
+  tp:
     jobs:
       - hello
-  install:
-    jobs:
-      - yarn
+      - yarninstall
       - lint:
           requires:
             - yarn
-  tests:
-    jobs:
-      - test
+      - unittest:
+          requires:
+            - yarn
       - e2e
+      - dockerbuild:
+          requires:
+            - lint
+            - test
+            - e2e
+          filters:
+            branches:
+              only: main
+      - dockerpush:
+          requires:
+            - dockerbuild
 
 jobs:
   hello:
@@ -22,7 +31,7 @@ jobs:
     steps:
       - checkout
       - run: echo "hello world"
-  yarn:
+  yarninstall:
     docker:
       - image: circleci/node:12
     steps:
@@ -42,7 +51,7 @@ jobs:
       - restore_cache:
           key: yarn-packages-{{ checksum "yarn.lock" }}
       - run: yarn lint && yarn format:check
-  test:
+  unittest:
     docker:
       - image: circleci/node:12
     steps:
@@ -69,3 +78,27 @@ jobs:
       - restore_cache:
           key: yarn-packages-{{ checksum "yarn.lock" }}
       - run: yarn test:e2e
+  dockerbuild:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+        environment:
+          IMAGE_NAME: giannidocker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker build -t $IMAGE_NAME:latest .
+  dockerpush:
+    environment:
+      IMAGE_NAME: gianni-building-on-ci
+    docker:
+      - image: circleci/buildpack-deps:stretch
+        environment:
+          DOCKERHUB_USERNAME: giannigiux
+          DOCKERHUB_PASS: testtpdocker
+    steps:
+      - setup_remote_docker
+      - run:
+        name: Publish Docker Image to Docker Hub
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push $IMAGE_NAME:latest
