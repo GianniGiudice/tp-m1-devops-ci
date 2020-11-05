@@ -88,7 +88,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker build --tag app .
+      - run: docker build --tag app:latest .
       - run: docker save -o image.tar app
   dockerpush:
     environment:
@@ -102,5 +102,5 @@ jobs:
     steps:
       - setup_remote_docker
       - run: docker login -u "giannigiux" -p "testtpdocker"
-      - run: docker tag app $IMAGE_NAME:$CIRCLE_BUILD_NUM .
+      - run: docker tag app:latest $IMAGE_NAME:$CIRCLE_BUILD_NUM
       - run: docker push $IMAGE_NAME:$CIRCLE_BUILD_NUM
