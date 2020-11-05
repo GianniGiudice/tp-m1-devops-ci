@@ -7,15 +7,15 @@ workflows:
       - yarninstall
       - lint:
           requires:
-            - yarn
+            - yarninstall
       - unittest:
           requires:
-            - yarn
+            - yarninstall
       - e2e
       - dockerbuild:
           requires:
             - lint
-            - test
+            - unittest
             - e2e
           filters:
             branches:
