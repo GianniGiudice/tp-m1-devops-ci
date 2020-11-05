@@ -91,6 +91,7 @@ jobs:
     environment:
       IMAGE_NAME: gianni-building-on-ci
     docker:
+      - image: circleci/node:12
       - image: circleci/buildpack-deps:stretch
         environment:
           DOCKERHUB_USERNAME: giannigiux
